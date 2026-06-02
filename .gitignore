@@ -6,8 +6,10 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Node (future use)
+# Node / Astro
 node_modules/
+dist/
+.astro/
 npm-debug.log*
 
 # Logs

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://panerai27.github.io/rocokingdom/sitemap-index.xml

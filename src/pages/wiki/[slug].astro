@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('wiki', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+type Props = { entry: CollectionEntry<'wiki'> };
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { data } = entry;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (p: string) => `${base}${p.startsWith('/') ? p : '/' + p}`;
+
+const published = data.pubDate.toISOString();
+const modified = (data.updatedDate ?? data.pubDate).toISOString();
+const canonical = new URL(withBase(`/wiki/${entry.id}`), Astro.site).toString();
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.description,
+  author: { '@type': 'Organization', name: 'Rocokingdom Wiki' },
+  publisher: { '@type': 'Organization', name: 'Rocokingdom Wiki' },
+  datePublished: published,
+  dateModified: modified,
+  mainEntityOfPage: canonical,
+  inLanguage: 'zh-CN',
+}];
+
+const dateText = (data.updatedDate ?? data.pubDate).toISOString().slice(0, 10);
+---
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  path={`/wiki/${entry.id}`}
+  type="article"
+  keywords={data.keywords}
+  publishedTime={published}
+  modifiedTime={modified}
+  jsonLd={jsonLd}
+>
+  <p class="breadcrumb">
+    <a href={withBase('/')}>首页</a> / <a href={withBase('/wiki')}>词条</a> / {data.title}
+  </p>
+  <article>
+    <h1>{data.title}</h1>
+    <p><em>更新时间：{dateText}</em></p>
+    <Content />
+
+    <h2>相关阅读</h2>
+    <p>
+      <a href={withBase('/wiki/beginner-guide')}>新手入门</a> ·
+      <a href={withBase('/wiki/pet-tier-list')}>宠物强度榜</a> ·
+      <a href={withBase('/wiki/event-calendar')}>活动日历</a>
+    </p>
+  </article>
+
+  <AdSlot label="AdSense 广告位（文章底部）" />
+</BaseLayout>

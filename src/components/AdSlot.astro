@@ -1,0 +1,7 @@
+---
+export interface Props {
+  label?: string;
+}
+const { label = 'AdSense 广告位' } = Astro.props;
+---
+<div class="ad-slot" aria-label="广告位">{label}</div>

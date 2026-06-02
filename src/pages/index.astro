@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdSlot from '../components/AdSlot.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (p: string) => `${base}${p.startsWith('/') ? p : '/' + p}`;
+
+const entries = (await getCollection('wiki', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const latest = entries.slice(0, 6);
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Rocokingdom Wiki',
+  url: new URL(withBase('/'), Astro.site).toString(),
+  inLanguage: 'zh-CN',
+}];
+---
+<BaseLayout
+  title="洛克王国攻略大全：新手、宠物、活动资料库"
+  description="Rocokingdom Wiki：提供洛克王国新手指南、宠物强度榜、活动日历与长期更新资料，帮助玩家快速查找权威攻略。"
+  path="/"
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <h1>洛克王国资料库：可检索、可持续更新、可变现</h1>
+    <p>本站聚焦 Rocokingdom 核心检索需求：新手入门、宠物强度、活动时间与版本改动。内容结构按 Google SEO 最佳实践设计，便于长期积累自然流量。</p>
+    <span class="tag">主题集群结构</span>
+    <span class="tag">SEO 语义化标记</span>
+    <span class="tag">AdSense 预留广告位</span>
+    <span class="tag">周更内容机制</span>
+  </section>
+
+  <section class="grid" aria-label="最新词条">
+    {latest.map((e) => (
+      <article class="card">
+        <h2>{e.data.title}</h2>
+        <p>{e.data.description}</p>
+        <a href={withBase(`/wiki/${e.id}`)}>查看词条</a>
+      </article>
+    ))}
+  </section>
+
+  <AdSlot label="AdSense 广告位（首页中部）" />
+
+  <section>
+    <h2>更新原则</h2>
+    <p>每周至少发布 3 篇内容：1 篇核心长文 + 2 篇时效短文，配合旧文更新，保持页面新鲜度与关键词覆盖扩张。</p>
+  </section>
+</BaseLayout>

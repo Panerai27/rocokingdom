@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const faqs = [
+  { q: '洛克王国新手最先应该做什么？', a: '优先推进主线解锁核心系统，搭建 1 套稳定阵容，每日完成活跃任务保证资源稳定来源。' },
+  { q: '宠物强度榜可信吗？', a: '榜单仅作为方向参考，请结合自身资源、阵容缺口与版本环境进行决策，不要盲目跟练。' },
+  { q: '如何不错过限时活动奖励？', a: '每周固定查看本站活动日历，并在活动结束前 24 小时进行一次集中兑换检查。' },
+  { q: '零氪玩家能玩到什么程度？', a: '通过合理规划资源与阵容协同，零氪玩家通常可在 90 天内搭起一套可应对绝大多数 PVE 副本的阵容。' },
+  { q: '本站资料更新频率？', a: '本站每周至少发布 3 篇内容，并在版本更新后 24-48 小时内同步关键改动。' },
+];
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+}];
+---
+<BaseLayout
+  title="洛克王国常见问题 FAQ"
+  description="洛克王国玩家高频问题集中解答：账号、宠物、活动、养成与变现疑问。"
+  path="/faq"
+  jsonLd={jsonLd}
+>
+  <article>
+    <h1>洛克王国常见问题 FAQ</h1>
+    {faqs.map((f) => (
+      <>
+        <h2>{f.q}</h2>
+        <p>{f.a}</p>
+      </>
+    ))}
+  </article>
+</BaseLayout>

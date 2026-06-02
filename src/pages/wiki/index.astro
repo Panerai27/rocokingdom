@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (p: string) => `${base}${p.startsWith('/') ? p : '/' + p}`;
+
+const entries = (await getCollection('wiki', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, 'zh'));
+
+// 按分类分组
+const groups = new Map<string, typeof entries>();
+for (const e of entries) {
+  const c = e.data.category || '其他';
+  if (!groups.has(c)) groups.set(c, []);
+  groups.get(c)!.push(e);
+}
+---
+<BaseLayout
+  title="全部词条"
+  description="Rocokingdom Wiki 全部词条索引，按分类持续更新。"
+  path="/wiki"
+>
+  <article>
+    <h1>全部词条</h1>
+    <p>共 {entries.length} 篇词条，按分类整理。</p>
+    {[...groups.entries()].map(([cat, list]) => (
+      <section>
+        <h2>{cat}</h2>
+        <ul>
+          {list.map((e) => (
+            <li><a href={withBase(`/wiki/${e.id}`)}>{e.data.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </article>
+</BaseLayout>
